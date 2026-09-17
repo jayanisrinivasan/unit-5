@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGI Strategy: Unit 5 | Find your position (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --side:#ffffff; --text:#1f2b45; --muted:#6b7280; --faint:#9ca3af;
+    --border:#e5e7eb; --border-strong:#cfd4dc; --brand:#2540d8; --brand-soft:#eef1fd;
+    --eyebrow:#3b55e6; --radius:10px; --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --bg:#0f1420; --side:#121828; --text:#e6e9f2; --muted:#a3acc2; --faint:#6b7590;
+    --border:#242c40; --border-strong:#38425c; --brand:#7b8dff; --brand-soft:#1a2340; --eyebrow:#8a9bff; }}
+  :root[data-theme="dark"]{
+    --bg:#0f1420; --side:#121828; --text:#e6e9f2; --muted:#a3acc2; --faint:#6b7590;
+    --border:#242c40; --border-strong:#38425c; --brand:#7b8dff; --brand-soft:#1a2340; --eyebrow:#8a9bff; }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.6}
+  a{color:var(--brand)}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);font-size:15px}
+  .top .crumbs{display:flex;gap:10px;align-items:center;color:var(--muted)}
+  .top .crumbs .cur{color:var(--text)}
+  .top button{background:none;border:none;color:var(--text);font:inherit;cursor:pointer;padding:6px 8px;border-radius:6px}
+  .top button:hover{background:var(--brand-soft)}
+  .top button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .wrap{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 50px)}
+  aside{border-right:1px solid var(--border);background:var(--side);padding:8px 0 24px}
+  .unit{padding:14px 24px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px;cursor:pointer;border-bottom:1px solid var(--border)}
+  .unit .chev{color:var(--muted);font-size:14px}
+  .items{padding:8px 0 10px}
+  .item{display:flex;gap:14px;align-items:flex-start;padding:12px 24px;cursor:pointer;border-left:3px solid transparent}
+  .item:hover{background:var(--brand-soft)}
+  .item.active{background:var(--brand-soft);border-left-color:var(--brand)}
+  .item:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+  .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border-strong);flex-shrink:0;margin-top:2px;position:relative}
+  .item.done .dot{border-color:var(--brand)}
+  .item.done .dot::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--brand)}
+  .item .t{font-size:15px}
+  .item .m{font-size:13px;color:var(--muted);margin-top:2px}
+  .note{margin:16px 24px 0;padding:14px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius);font-size:13px;color:var(--muted)}
+  main{padding:40px 56px 80px;max-width:980px}
+  .eyebrow{color:var(--eyebrow);font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-bottom:10px}
+  h1{font-size:34px;line-height:1.2;margin:0 0 20px;font-weight:600}
+  h2{font-size:18px;margin:34px 0 14px;font-weight:600}
+  p{margin:0 0 14px;max-width:72ch}
+  .card{border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin:0 0 16px;max-width:820px}
+  .card h3{margin:0 0 10px;font-size:17px;font-weight:600;display:flex;gap:8px;align-items:center}
+  .card h3 .ext{font-size:13px;color:var(--brand)}
+  .card p{max-width:none}
+  .card .meta{font-size:14px;color:var(--muted);margin-top:4px}
+  .card .unlock{font-size:14px;margin-top:10px}
+  .ex{border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin:0 0 16px;max-width:820px}
+  .ex h3{margin:0 0 8px;font-size:17px;font-weight:600}
+  .ex textarea{width:100%;min-height:110px;border:1px solid var(--border-strong);border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;color:var(--text);background:var(--bg);resize:vertical;margin-top:8px}
+  .ex textarea:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+  .saverow{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .status{font-size:13px;color:var(--muted)}
+  .status.ok{color:#1a7f4b}
+  .ex .save{display:inline-block;background:var(--brand);color:#fff;border:none;border-radius:6px;padding:9px 14px;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+  blockquote{margin:12px 0;padding:12px 16px;border-left:3px solid var(--brand);background:var(--brand-soft);border-radius:0 8px 8px 0;max-width:820px}
+  blockquote p{margin:0 0 6px}
+  ol,ul{max-width:72ch;padding-left:22px}
+  li{margin-bottom:8px}
+  .nav{display:flex;justify-content:center;gap:12px;margin-top:40px}
+  .btn{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:10px 18px;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+  .btn.ghost{background:none;color:var(--brand);border:1px solid var(--brand)}
+  .btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .tag{display:inline-block;font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:2px 9px;margin-left:8px;vertical-align:middle}
+  .wrap.reasoning{grid-template-columns:320px 1fr 300px}
+  .rail{display:none;padding:40px 24px 80px 0}
+  .wrap.reasoning .rail{display:block}
+  .railtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+  .railtabs button{font:inherit;font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+  .railtabs button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .railtabs button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .doclink{text-decoration:none;color:inherit;border-top:1px solid var(--border);margin-top:6px;padding-top:14px}
+  .note.pink{display:block;background:#ff6fae;color:#2b0016;border-left-color:#c2005f;text-decoration:none;box-shadow:0 6px 16px rgba(194,0,95,.35);transform:rotate(-1.5deg) scale(1.02)}
+  .note.pink h4{font-size:14px}
+  .note.pink.inmain{max-width:520px;margin:0 0 26px;font-size:15px;transform:rotate(-1deg)}
+  .note.pink:hover{background:#ff5aa2}
+  .legend{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--text-secondary,#6b7280);margin-bottom:12px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:2px}
+  .legend .sw-y{background:#fff5b1;border:1px solid #e6c700} .legend .sw-g{background:#d8f5dc;border:1px solid #2e9e4f} .legend .sw-b{background:#dbe9ff;border:1px solid #2a5bd7}
+  .note.green{background:#d8f5dc;color:#0d3a1a;border-left-color:#2e9e4f}
+  .note.blue{background:#dbe9ff;color:#0c2454;border-left-color:#2a5bd7}
+  .note{background:#fff5b1;color:#3a3200;border-radius:4px;padding:12px 14px;font-size:13px;line-height:1.45;box-shadow:0 4px 10px rgba(0,0,0,.12);margin-bottom:18px;border-left:3px solid #e6c700}
+  .note:nth-child(odd){transform:rotate(-0.8deg)} .note:nth-child(even){transform:rotate(0.8deg)}
+  .note h4{margin:0 0 6px;font-size:12px;letter-spacing:.02em;font-weight:700}
+  .note ul{margin:0;padding-left:16px} .note li{margin-bottom:5px}
+  .note li b{font-weight:700}
+  .toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:999px;padding:4px 10px;background:var(--bg);font:inherit;font-size:14px;color:var(--text);cursor:pointer}
+  .toggle .sw{width:28px;height:16px;border-radius:999px;background:var(--border-strong);position:relative;display:inline-block;transition:background .15s}
+  .toggle .sw::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}
+  .toggle.on .sw{background:var(--brand)} .toggle.on .sw::after{left:14px}
+  @media (max-width:860px){
+    .wrap.reasoning{grid-template-columns:1fr}
+    .rail{padding:0 20px 40px}
+    .wrap{grid-template-columns:1fr}
+    aside{border-right:none;border-bottom:1px solid var(--border)}
+    main{padding:28px 20px 60px}
+    h1{font-size:28px}
+  }
+  @media (prefers-reduced-motion:no-preference){ .item{transition:background .12s} }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="crumbs"><button id="hide" aria-label="Toggle sidebar">☰ Hide</button><span>Courses</span><span>›</span><span>AGI Strategy</span><span>›</span><span class="cur">5. Find your position</span></div>
+  <div style="display:flex;gap:10px;align-items:center"><button class="toggle" id="reasonToggle" aria-pressed="false"><span class="sw"></span>Show reasoning</button><button id="prevTop">← Prev</button><button id="nextTop">Next →</button></div>
+</div>
+<div class="wrap" id="wrap">
+  <aside id="side">
+    <div class="unit"><span>1. Racing to a Better Future</span><span class="chev">›</span></div>
+    <div class="unit"><span>2. Drivers of AI Progress</span><span class="chev">›</span></div>
+    <div class="unit"><span>3. Pathways to Harm</span><span class="chev">›</span></div>
+    <div class="unit"><span>4. Defence in Depth</span><span class="chev">›</span></div>
+    <div class="unit"><span>5. Find your position</span><span class="chev">⌄</span></div>
+    <div class="items" id="items"></div>
+    <a class="item doclink" id="docLink" href="#" target="_blank" rel="noopener"><span class="dot" style="border-style:dashed"></span><div><div class="t">Facilitated discussion ↗</div><div class="m">2h · opens the discussion doc</div></div></a>
+    <div class="note">Mockup of the redesigned Unit 5. Click a section to read it. Times are the participant's total for that section (reading + exercises). Answers save in this browser. <a href="#" id="reset">Clear my answers</a></div>
+  </aside>
+  <main id="main"></main>
+  <aside class="rail" id="rail" aria-label="Design reasoning"></aside>
+</div>
+
+<script>
+// The discussion doc PDF ships alongside index.html. Opens in a new tab.
+const DISCUSSION_DOC_URL = 'https://drive.google.com/file/d/1KcF9jKq00sgMrpMQIu4He-4akSUlGzKI/view?usp=sharing';
+
+const sections = [
+{ id:"5-1", title:"See the board", time:"35min", html:`
+<a class="note pink inmain" href="https://drive.google.com/file/d/1KcF9jKq00sgMrpMQIu4He-4akSUlGzKI/view?usp=sharing" target="_blank" rel="noopener"><h4>The 2-hour discussion doc</h4><ul><li>Click here to open it (PDF)</li><li>Partner tests your claim, then the group compares Unit 1 beliefs with now</li></ul></a>
+<p>Unit 4 sorted the field by defensive layer, which makes research look like the whole field. It isn't. It's one kind of work among many, and probably the one you were already looking at.</p>
+<p>Research is crowded for good reasons. But over 2,000 people a year enter that door, and the people who hire say their thinnest areas are elsewhere. This section asks two things: what is the field short of, and what would make you the rare candidate for it?</p>
+<p>If you still want research after this, good. Now you've chosen it.</p>
+<p>Some of you will realise the thing you'd be best at isn't a job anyone is posting. That's the third answer, and the rest of this unit takes it as seriously as the other two.</p>
+<h2>Resources (30 mins)</h2>
+<div class="card"><h3><a href="https://www.lesswrong.com/posts/QCrT2DTJNfvuqtppB/ai-safety-s-biggest-talent-gap-isn-t-researchers-it-s" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">AI Safety's Biggest Talent Gap Isn't Researchers. It's Generalists.</a> <span class="ext">↗</span></h3>
+<p>Where the field is thin, from people who hire: program managers, fieldbuilders, operators, org leaders, founders. A few hundred doing that work versus a few thousand researchers. Note the trap they name: fellowships are legible, so people become researchers whether or not it fits. A strong case, from people with a view.</p>
+<div class="meta">Neav Topaz et al. · 2026 · 12 min</div>
+</div>
+<div class="card"><h3><a href="https://fieldbuilders.substack.com/p/what-3654-job-postings-tell-us-about" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">What 3,654 Job Postings Tell Us About Talent Needs in AI Safety</a> <span class="ext">↗</span></h3>
+<p>What the field actually asks for, across every role. Leadership roles want management plus ops, strategy or policy. Labs want security. You'll use it in 5.2 to read what postings assume.</p>
+<div class="meta">Fieldbuilders · 2026 · 12 min</div>
+</div>
+<div class="card"><h3><a href="https://www.lesswrong.com/posts/XvN2QQpKTuEzgkZHY/being-the-pareto-best-in-the-world" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Being the (Pareto) Best in the World</a> <span class="ext">↗</span></h3>
+<p>Nobody is the best alignment researcher. Someone is the best security engineer who also gets evals. Rarity is the intersection, and you already have one.</p>
+<div class="meta">John Wentworth · 2019 · 4 min</div>
+</div>
+<div class="card"><h3><a href="https://forum.effectivealtruism.org/posts/rAqKSSXankvys2Fzu/the-case-for-ai-safety-capacity-building-work" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">The case for AI safety capacity-building work</a> <span class="ext">↗</span><span class="tag">optional</span></h3><p>A Coefficient Giving grantmaker on why many of the people hired into research at Apollo, Redwood, METR and the labs would have more impact building the field instead. Read the TL;DR and "Who should be doing this work"; skip the testimonials unless you want them.</p><div class="meta">Asya Bergal · 2026 · 8 min for those two sections</div></div>
+<h2>Exercises</h2>
+<div class="ex"><h3>Before and after</h3><p>Before reading: which kind of work were you going to pick? After: did it move? "No" is fine if you can say why.</p><textarea placeholder="Before: … After: …"></textarea></div>
+<div class="ex"><h3>Your intersection</h3><p>Two skills where you'd be top 10% of this cohort. They don't have to be AI skills: running a team, writing a brief someone reads, shipping infrastructure, a clearance, a network in a sector AI is about to reshape. You'll need both in 5.3.</p><textarea placeholder="1. … 2. …"></textarea></div>
+`},
+{ id:"5-2", title:"Read three organisations closely", time:"1h 10min", html:`
+<p>Insiders know where they're needed because they've read a few organisations closely, not many loosely. Postings tell you what an org has already decided to hire for. What you want is what it's trying to do next and can't yet. The gap between the two is where a position lives.</p>
+<p>Pick three organisations: one where you'd be a strong applicant today, one that would be a stretch, one doing a kind of work you didn't name in 5.1. Your current employer counts.</p>
+<p>Twenty minutes per organisation is enough to read closely and not enough to be thorough. Submit what you have.</p>
+<h2>Resources (10 mins)</h2>
+<div class="card"><h3><a href="https://aisafety.com/map" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">AI Safety Map</a> <span class="ext">↗</span></h3><p>Which organisations exist, by type. Pick your three here, then go to each org's own site.</p><div class="meta">aisafety.com · live</div></div>
+<div class="card"><h3><a href="https://jobs.80000hours.org/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">80,000 Hours job board, filtered to AI safety</a> <span class="ext">↗</span></h3><p>A tool, not a reading. Filter for AI safety, then read postings for what they assume, not what they title.</p><div class="meta">80,000 Hours · live</div></div>
+<h2>Exercises (60 mins, timed)</h2>
+<div class="ex"><h3>Three organisations, twenty minutes each</h3>
+<p>Use only the org's own words: its last three posts, its postings, its funding calls.</p>
+<ol>
+<li><strong>What they're trying to do next.</strong> One line, from their recent writing.</li>
+<li><strong>What they're hiring for to get there.</strong> Quote the posting. Then note what it assumes you already have; that's who you're competing against.</li>
+<li><strong>The gap.</strong> What do they need for (1) that they aren't posting for in (2)? That's the thing nobody's applying for, and the first draft of your position.</li>
+</ol>
+<p>Set the timer. Bring all three to the discussion.</p>
+<textarea placeholder="Org 1: next / hiring for (assumes...) / gap&#10;Org 2:&#10;Org 3:" style="min-height:160px"></textarea></div>
+`},
+{ id:"5-3", title:"Your first position", time:"40min", html:`
+<p>From 5.1 you have an intersection: two skills where you're rare. From 5.2, three gaps: things organisations need and aren't posting for. Where they overlap is a position.</p>
+<p>Write it. It's provisional, and that's fine: you can't ask a good question without a claim to test, and the rest of this unit tests it. Redwood spent two years on interpretability before seeing what it couldn't do. You get thirty-five minutes and a v0.</p>
+<h2>Resources (5 mins)</h2>
+<div class="card"><h3><a href="https://80000hours.org/career-guide/personal-fit/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">The evidence on how to find the right career for you</a> <span class="ext">↗</span></h3><p>One idea only: fit is comparative. You're not asking "am I good at this," you're asking "am I better at this than the people who'll apply."</p><div class="meta">80,000 Hours · 10 min, skim</div></div>
+<h2>Exercises (35 mins)</h2>
+<div class="ex"><h3>The claim</h3>
+<p>One paragraph, four parts. Each has to be something someone could say is false.</p>
+<blockquote><p><strong>[Organisation or kind of work] needs [Y].</strong></p><p><strong>I'm unusually good at Y because [something I've done that a stranger could look at].</strong></p><p><strong>The posting assumes applicants have [X]. Beyond that, I have [what you have that it doesn't ask for].</strong></p><p><strong>It matters because [the threat from Unit 3 it reduces, and the obvious alternative it beats].</strong></p></blockquote>
+<p><strong>Or, the build-it version.</strong> If the thing you'd be best at isn't a job anyone is posting:</p>
+<blockquote><p><strong>Nobody is doing [Y], and it needs doing because [the gap from 5.2].</strong></p><p><strong>I could build it because [something I've built or run that a stranger could look at].</strong></p><p><strong>The reason it doesn't exist isn't that it's a bad idea; it's [why].</strong></p></blockquote>
+<p>If none of your three gaps overlaps your intersection, write the claim for the closest one anyway and mark it <em>forced</em>. That's information.</p>
+<textarea placeholder="… needs …&#10;I'm unusually good at it because …&#10;The typical strong applicant lacks it because …&#10;It matters because …"></textarea></div>
+<div class="ex"><h3>Four checks</h3>
+<p>Write the result of each.</p>
+<ol>
+<li><strong>Is Y what they need, or what you'd like them to need?</strong> Fails unless you can quote the org. Use 5.2.</li>
+<li><strong>Is your evidence real?</strong> Fails unless it's an output, not a belief. A thing you shipped, ran, wrote, fixed.</li>
+<li><strong>What do you have beyond what's assumed?</strong> Fails unless it's something the posting didn't ask for. Use "what the posting assumes you already have" from 5.2.</li>
+<li><strong>Is it more than marginal?</strong> Fails unless you can name what you'd be giving up and say why this beats it. "It helps AI go well" is not an answer; "it closes step 3 of the kill chain I built in Unit 3, and it beats joining an evals team because that step is already staffed" is.</li>
+</ol>
+<p><strong>Checks for the build-it version:</strong> the fourth is the same. For the first three: (1) <em>Is it actually not being done?</em> Fails unless you searched: the aisafety.com map, the grants databases, and the orgs that tried and stopped. Name the closest existing thing. (2) <em>Is your evidence real?</em> Same as above. (3) <em>Why doesn't it exist?</em> Fails unless you can name one organisation that could have built it and say why they didn't. "Nobody thought of it" is not an answer; "they tried in 2024 and stalled on X" or "it's outside every existing org's remit" is.</p>
+<p>Name the assumption you most need to test. If the claim fails, write a second one in the time left. A sound claim can survive; an untested one hasn't earned confidence.</p>
+<textarea placeholder="Check 1: … Check 2: … Check 3: … Check 4: … Weakest: …"></textarea></div>
+<div class="ex"><h3>Example, including how it fails</h3>
+<blockquote><p><em>Evals orgs need someone who can run a contractor pipeline for building datasets. I ran contractor operations for a 40-person data-labelling team for two years. The posting assumes experience managing external teams. Beyond that, I've done it at scale under a research deadline. It matters because dangerous-capability evals are the detection step in the misuse chain I built in Unit 3, and the bottleneck there is dataset throughput, not researchers.</em></p></blockquote>
+<p>Check 1: passes, the org's posting asks for exactly this. Check 2: passes, there's a team and a track record. Check 3: passes only because of the second half. Without "at scale under a research deadline," it's exactly what the posting already assumes. Check 4: holds only if dataset throughput really is the bottleneck. That's the line the facilitator will go after in the discussion; be ready to say how you know.</p></div>
+`},
+{ id:"5-4", title:"Ask the field", time:"45min", html:`
+<p>Nobody finds their position alone. You find it by sending your claim to people who can tell you it's wrong. Most will, within a week, if you ask properly.</p>
+<p>Asking properly means sending a claim, not a request. "Any advice?" gets ignored. "I think you need X and I'm placed for it because Y. What am I missing?" gets answered, because it's easy to answer and hard to leave wrong.</p>
+<p>Send the first one before the discussion. You won't have a reply by then; that's fine.</p>
+<h2>Resources (15 mins)</h2>
+<div class="card"><h3><a href="https://www.neelnanda.io/blog/become-a-person-who-actually-does-things" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Become a person who Actually Does Things</a> <span class="ext">↗</span></h3><p>The argument for sending this before you feel ready. You'll never feel ready.</p><div class="meta">Neel Nanda · 2022 · 5 min</div></div>
+<div class="card"><h3><a href="https://80000hours.substack.com/p/how-to-get-into-ai-safety-in-3-months" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">How to get into AI safety in 3 months</a> <span class="ext">↗</span></h3><p>An 80,000 Hours advisor on why the fastest route is talking to people and doing the work, not more reading. If you think you need another year of preparation first, read this before you decide.</p><div class="meta">Matt Beard · 2026 · 10 min</div></div>
+<h2>Exercises (30 mins)</h2>
+<div class="ex"><h3>Five people who can say no</h3><p>At least one at each of your three organisations, and one BlueDot alumnus. The BlueDot Slack is the fastest way to find all five: post your claim in the channel for your kind of work and ask who you should talk to.</p><textarea placeholder="1. … 2. … 3. … 4. … 5. …"></textarea></div>
+<div class="ex"><h3>The message</h3><p>Under 120 words. Your claim, as a question.</p>
+<blockquote><p>I'm [one line on you]. I think [org or kind of work] needs [Y]. I'm placed for it because [Z]. What am I missing?</p></blockquote>
+<p>No CV, no "pick your brain." One question they can answer in two minutes. If nothing comes back by day 14, send the two you haven't sent. A non-reply is data; it goes in your post.</p>
+<p><strong>Or: the internal version.</strong> If your claim is about your current employer, write a one-page case to a named person there for one specific action. Same rule: sendable, refusable.</p>
+<textarea placeholder="Your message"></textarea></div>
+<div class="ex"><h3>Send one</h3><p>Before the discussion. Screenshot it. You'll rehearse the other four in the session.</p><textarea placeholder="Paste a link to the screenshot" style="min-height:60px"></textarea></div>
+`},
+{ id:"5-5", title:"Commit to the month", time:"25min", html:`
+<p>A position takes about a month of asking to get right. The course ends today; the month is yours. The commitment is two dates and one post.</p>
+<p>Open a draft now with v0 in it. Each time a conversation changes the claim, add a dated version. On day 30, publish. Your cohort will read it and push back, as they have all week.</p>
+<h2>Resources (5 mins)</h2>
+<div class="card"><h3><a href="https://forum.effectivealtruism.org/posts/8zn4Yn4orHYggc5KN/completing-the-bluedot-agi-strategy-course-reflections-from" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Where I think they need me: an alumnus's post</a> <span class="ext">↗</span></h3><p>The best post from a previous cohort. Read it for the shape, not the answer.</p><div class="meta">BlueDot picks one per quarter · 5 min</div></div>
+<h2>Exercises (20 mins)</h2>
+<div class="ex"><h3>Open the draft</h3><p>One draft, wherever you'll publish. Paste in v0 of your claim, dated, with your weakest check, and your five names with an empty column for "what they said." Paste the draft link in the discussion doc where the template asks for your action plan URL.</p><textarea placeholder="Draft link" style="min-height:60px"></textarea></div>
+<div class="ex"><h3>Two reminders, set now</h3>
+<ul><li><strong>Day 14:</strong> rewrite the claim from what you've heard. If nobody's replied, send the ones you haven't.</li><li><strong>Day 30:</strong> publish.</li></ul></div>
+<div class="ex"><h3>Connect with your cohort on LinkedIn</h3><p>In the discussion. When someone publishes, comment with one thing you'd push back on. That's the only rule.</p></div>
+<div class="ex"><h3>The post</h3>
+<p>Title: <em>Where I think they need me: [org or kind of work]</em>. 500–800 words, these sections, this order:</p>
+<ol>
+<li><strong>v0.</strong> Today's claim, unedited.</li>
+<li><strong>What five people said.</strong> One line each. Non-replies count; write them down.</li>
+<li><strong>What failed.</strong> Which check failed and who showed you.</li>
+<li><strong>v3.</strong> The claim now.</li>
+<li><strong>What I did.</strong> One thing this month a stranger can see. If it's applying to a course, what it gives you that five conversations didn't.</li>
+<li><strong>What I'm still wrong about.</strong> The check you still can't pass.</li>
+<li><strong>What am I missing?</strong></li>
+</ol>
+<p>LinkedIn by default. EA Forum or LessWrong only if section 3 taught you something the field hasn't said. Government or employer constraints: same template, cohort Slack only.</p></div>
+<div class="card"><h3><a href="#" class="docLinkInline" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">The discussion doc</a> <span class="ext">↗</span></h3><p>What happens in the 2-hour session: your partner tests your claim, then the group compares what it believed in Unit 1 with what it believes now. Bring your claim and your first message.</p><div class="meta">Facilitated · 2h</div></div>
+<div class="ex"><h3>Wild success, revisited</h3><p>Reread what you wrote in Unit 1. One line: the distance between that and your v0.</p><textarea placeholder="One line" style="min-height:60px"></textarea></div>
+`},
+{ id:"5-6", title:"Next steps", time:"", html:`
+<p>Most of what you need next is a conversation, not a program. This page is for when it isn't: five broad doors. If one is your next step, your day-30 post asks what it gives you that five conversations wouldn't.</p>
+<p>If your claim was the build-it version, the last two are yours: Rapid Grants to test it in weeks, Incubator Week to fund it.</p>
+<h2>Resources</h2>
+<div class="card"><h3><a href="https://sparai.org/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">SPAR</a> <span class="ext">↗</span></h3><p>Part-time, remote, three months, mentored by researchers from Anthropic, Redwood, RAND, MIT and the UK AISI. The widest door in the field, and it now runs generalist projects too, in fieldbuilding, communications, and organisational infrastructure.</p><div class="meta">Kairos · rounds twice a year</div></div>
+<div class="card"><h3><a href="https://www.matsprogram.org/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">MATS</a> <span class="ext">↗</span></h3><p>The main full-time research fellowship, Berkeley and London. Apply with a research direction, not an interest.</p><div class="meta">MATS · three rounds a year</div></div>
+<div class="card"><h3><a href="https://generatorresidency.org/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">Generator Residency</a> <span class="ext">↗</span></h3><p>Three months in Berkeley for people who want a way into AI safety that isn't "be a researcher." Pitch, build, ship, then get placed.</p><div class="meta">Kairos × Constellation · twice a year</div></div>
+<div class="card"><h3><a href="https://bluedot.org/grants" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">BlueDot Grants</a> <span class="ext">↗</span></h3><p>Rapid Grants: small, fast funding for concrete work, five-minute application, decisions in days. Career Transition Grants: funding to go full-time. Sections 4 to 7 of your day-30 post are the application.</p><div class="meta">BlueDot · rolling</div></div>
+<div class="card"><h3><a href="https://bluedot.org/programs" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">BlueDot Programs</a> <span class="ext">↗</span></h3><p>Full-time, in-person, a week or more. Incubator Week for founders (up to $100k if we back your pitch), Context Week, AI Security Bootcamp. Check what's open.</p><div class="meta">BlueDot · frequent, dates vary; check the live page</div></div>
+`}
+];
+
+
+const notes = {
+"5-1":[
+ {k:"blue",t:"Kept, cut, added",b:["Kept: Nanda's \"Actually Does Things,\" moved to 5.4 as the reason to send before you're ready.","Cut: Dewi's intervention list (stale in a year), Go deep in one area, the 1-pager, the two-hour advice block, both next-steps pages.","Added: Topaz and the postings analysis as a pair; Wentworth, already on BlueDot's Alignment course; 80k on fit; Beard; Bergal (optional).","Everything external. BlueDot writes framing paragraphs and nothing that goes stale."]},
+ {k:"yellow",t:"Why this page",b:["Unit 4 sorts by layer. Research looks like the whole field. It isn't.","Instead of \"go elsewhere\": keep research on the board, show the queue at every door, let them choose.","Talent: sharp people don't want steering. They want the odds. Give them the odds."]},
+ {k:"green",t:"How you'd know: the page moved someone",b:["Before/after shows whether it did. \"No, and here's why\" counts.","The intersection names two skills. Weak version: two AI buzzwords, no evidence.","Nothing scored. It feeds 5.3."]}
+],
+"5-2":[
+ {k:"yellow",t:"Why three orgs",b:["People jam themselves through the one door they've seen. A square through a triangle.","The fix is more understanding of the right kind: what orgs are trying to build, and why.","Bergal (Coefficient Giving): many research hires at Apollo, Redwood, METR would do more good building the field. If true inside, truer at the door.","Talent: 60 minutes on a timer. The exceptional participant's three are still good."]},
+ {k:"green",t:"How you'd know: see the board",b:["Three orgs read from their own words, one gap named for each.","Weak version: the gap is copied from the posting; \"next\" is the mission statement.","Checked in the pair round: \"what's your source?\""]}
+],
+"5-3":[
+ {k:"yellow",t:"Why a claim, not a plan",b:["A plan lists. A claim can be tested. Four parts, each falsifiable.","Instead of a research proposal (trains analysts) or a 1-pager (nobody reads it).","The fourth line, why it matters, is what separates people. It makes their Unit 3 kill chain the evidence.","Talent: something hard enough to fail at. That's what keeps a founder or an ML engineer in the room."]},
+ {k:"yellow",t:"The build-it version",b:["For the person who could get hired and suspects the thing that needs doing doesn't exist yet.","Check 3: name who could have built it and why they didn't. \"Nobody thought of it\" fails.","Talent: this is where Incubator Week founders come from, pitch pre-tested."]},
+ {k:"green",t:"How you'd know: say where they fit",b:["A four-part claim with a named weakest part.","Weak version: part three repeats the posting, part four says \"it helps AI go well.\"","Tested by the partner's three questions in the discussion."]}
+],
+"5-4":[
+ {k:"yellow",t:"Why a claim as a question",b:["\"Any advice?\" gets ignored. \"I think you need X, I'm placed because Y, what am I missing?\" gets answered.","Instead of a persuasion exercise: Units 2 and 4 do that already.","Talent: the first reply from someone in the field is the exciting part. Make it happen inside the course.","BlueDot can tell from applications who to watch. The Slack is where you nudge them toward the right people. No workload."]},
+ {k:"green",t:"How you'd know: ask the field",b:["One message sent before the discussion, screenshot attached.","Weak version: \"any advice?\" or a message to a friend.","Five conversations by day 30, listed in section 2 of the post."]}
+],
+"5-5":[
+ {k:"blue",t:"The piece that doesn't exist: the alumnus post",b:["500 to 800 words by a previous participant, titled \"Where I think they need me: [org or kind of work],\" following the seven sections in 5.5.","First cohort: an existing alumnus reflection stands in. After that, BlueDot picks the best one per quarter.","That is the whole maintenance cost of the unit."]},
+ {k:"yellow",t:"Why a month and a post",b:["A position takes a month of asking. A public post finishes the month because eight people will read it.","Instead of emails, forms, buddies: 400 a month, no new workload. LinkedIn does the accountability.","Talent: posts share a title. Anyone at BlueDot can find them. Real revisions stand out from polished ones. Nobody is ranked."]},
+ {k:"green",t:"How you'd know: test it, and the belief",b:["Versions changed between the day-0 claim and the post, and who changed them.","Weak version: the post is the v0 in better words, section 3 empty.","Publishing at all is the belief in action: the first answer was provisional and asking improved it."]}
+],
+"5-6":[
+ {k:"yellow",t:"Five doors, no courses",b:["The exit menu shapes what people say they want. Five broad doors, no default.","Instead of two pages sorted by BlueDot course. They funnel.","Talent: Rapid Grants and Incubator Week are the door for the build-it answer. The post is the application."]},
+ {k:"green",t:"How you'd know: the exit worked",b:["If a course is the next step, section 5 of the post says what it gives that five conversations didn't.","Weak version: \"to learn more.\"","Nobody is stopped from taking a course. They just have to say why."]}
+]};
+let reasoning = false;
+reasoning = true;
+try{ const q=new URLSearchParams(location.search).get('reasoning'); if(q==='off') reasoning=false; else if(q!=='on' && localStorage.getItem('u5-reasoning')==='0') reasoning=false; }catch(e){}
+function renderRail(){
+  const wrap=document.getElementById('wrap'); const rail=document.getElementById('rail'); const tg=document.getElementById('reasonToggle');
+  wrap.classList.toggle('reasoning',reasoning); tg.classList.toggle('on',reasoning); tg.setAttribute('aria-pressed',String(reasoning));
+  const n=notes[sections[cur].id]||[];
+  const tabs=`<div class="railtabs" role="tablist" aria-label="Reasoning by section">${sections.map((x,i)=>`<button role="tab" aria-selected="${i===cur}" class="${i===cur?'on':''}" data-i="${i}">${x.id.replace('-','.')}</button>`).join('')}</div>`;
+  const legend=`<div class="legend"><span><i class="sw-y"></i>Reasoning</span><span><i class="sw-g"></i>How you'd know it worked</span><span><i class="sw-b"></i>Kept, cut, added</span></div>`;
+  rail.innerHTML = tabs + legend + n.map(x=>`<div class="note ${x.k||'yellow'}"><h4>${x.t}</h4><ul>${x.b.map(li=>`<li>${li}</li>`).join('')}</ul></div>`).join('');
+  rail.querySelectorAll('.railtabs button').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+}
+
+let cur = 0;
+let answers = {};
+try{ const a=localStorage.getItem('u5-answers'); if(a) answers=JSON.parse(a)||{}; }catch(e){ answers={}; }
+function persist(){ try{ localStorage.setItem('u5-answers', JSON.stringify(answers)); }catch(e){} }
+const items = document.getElementById('items');
+const main = document.getElementById('main');
+const visited = new Set();
+
+function hasAnswers(id){ return Object.keys(answers).some(k=>k.startsWith(id+'-') && answers[k] && answers[k].trim()); }
+function renderSidebar(){
+  items.innerHTML = sections.map((s,i)=>`
+    <div class="item ${i===cur?'active':''} ${(visited.has(i)||hasAnswers(s.id))?'done':''}" role="button" tabindex="0" data-i="${i}">
+      <span class="dot"></span>
+      <div><div class="t">${s.title}</div>${s.time?`<div class="m">${s.time}</div>`:''}</div>
+    </div>`).join('');
+  items.querySelectorAll('.item').forEach(el=>{
+    el.addEventListener('click',()=>go(+el.dataset.i));
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();go(+el.dataset.i);} });
+  });
+}
+function render(){
+  const s = sections[cur];
+  main.innerHTML = `
+    <div class="eyebrow">Unit 5: Find your position</div>
+    <h1>${s.title}</h1>
+    ${s.html}
+    <div class="nav">
+      ${cur>0?`<button class="btn ghost" id="prev">← Prev</button>`:''}
+      ${cur<sections.length-1?`<button class="btn" id="next">Continue ›</button>`:`<button class="btn" id="next" disabled>End of course</button>`}
+    </div>`;
+  main.querySelectorAll('.ex').forEach((box,bi)=>{
+    const tas=box.querySelectorAll('textarea');
+    if(!tas.length) return;
+    const status=document.createElement('span'); status.className='status';
+    tas.forEach((ta,ti)=>{
+      const key=`${s.id}-${bi}-${ti}`;
+      ta.dataset.key=key;
+      if(answers[key]!==undefined) ta.value=answers[key];
+      ta.addEventListener('input',()=>{ answers[key]=ta.value; persist(); status.textContent='Unsaved changes'; status.className='status'; });
+    });
+    const btn=document.createElement('button'); btn.className='save'; btn.textContent='Save answers';
+    btn.addEventListener('click',()=>{ persist(); status.textContent='Saved'; status.className='status ok'; });
+    const row=document.createElement('div'); row.className='saverow'; row.append(btn,status); box.append(row);
+    if([...tas].some(t=>t.value.trim())){ status.textContent='Saved'; status.className='status ok'; }
+  });
+  const p=document.getElementById('prev'); if(p) p.onclick=()=>go(cur-1);
+  const n=document.getElementById('next'); if(n && cur<sections.length-1) n.onclick=()=>go(cur+1);
+    main.querySelectorAll('.docLinkInline').forEach(a=>a.href=DISCUSSION_DOC_URL);
+  renderRail();
+  window.scrollTo({top:0});
+}
+function go(i){ persist(); visited.add(cur); cur=Math.max(0,Math.min(sections.length-1,i)); renderSidebar(); render(); }
+document.getElementById('reset').onclick=(e)=>{ e.preventDefault(); if(confirm('Clear all saved answers?')){ answers={}; persist(); visited.clear(); renderSidebar(); render(); } };
+document.getElementById('reasonToggle').onclick=()=>{ reasoning=!reasoning; try{ localStorage.setItem('u5-reasoning',reasoning?'1':'0'); }catch(e){} renderRail(); };
+document.getElementById('docLink').href=DISCUSSION_DOC_URL;
+document.getElementById('prevTop').onclick=()=>go(cur-1);
+document.getElementById('nextTop').onclick=()=>go(cur+1);
+document.getElementById('hide').onclick=()=>{ const side=document.getElementById('side'); const wrap=document.getElementById('wrap'); const hidden=side.style.display==='none'; side.style.display=hidden?'':'none'; wrap.style.gridTemplateColumns=hidden?'':(reasoning?'1fr 300px':'1fr'); };
+try{ const saved=localStorage.getItem('u5-cur'); if(saved!==null) cur=+saved; }catch(e){}
+renderSidebar(); render();
+window.addEventListener('beforeunload',()=>{ try{ localStorage.setItem('u5-cur',cur); }catch(e){} });
+</script>
+</body>
+</html>
